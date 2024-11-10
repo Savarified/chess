@@ -43,6 +43,53 @@ K   Q   R   B   N   P
 ♚	♛	♜	♝	♞	♟
 
 '''
+class King():
+    def __init__(self, x, y, color, captured, type):
+        self.x = x
+        self.y = y
+        self.color = color
+        self.captured = captured
+        self.type = type
+
+    def move(position):
+        if abs(self.x - position[0]) <= 1 and abs(self.y - position[1]) <= 1:
+            if board.exists(position):
+                temp_piece = board.findPiece(position)
+                temp_piece.captured = True
+                temp_piece.x = -1
+
+            if board.isValid(position):
+                self.x = position[0]
+                self.y = position[1]
+                return True
+        return False
+
+class Bishop():
+    def __init__(self, x, y, color, captured, type):
+        self.x = x
+        self.y = y
+        self.color = color
+        self.captured = captured
+        self.type = type
+
+    def move(self, position):
+        if [self.x, self.y] == position:
+            return False
+        if abs(self.x - position[0]) != abs(self.y - position[1]):
+            return False
+        if board.exists(position):
+            if board.findPiece(position).color == self.color:
+                print(f'^Invalid position: [{chr(position[0]+ord('A')-1)}, {position[1]}] is occupied by a piece of your color')
+                return False
+            else:
+                temp_piece = board.findPiece(position)
+                temp_piece.captured = True
+                temp_piece.x = -1
+
+        self.x = position[0]
+        self.y = position[1]
+        return True
+
 class Pawn():
     def __init__(self, x, y, color, captured, type):
         self.x = x
@@ -76,50 +123,33 @@ class Pawn():
                 self.y = position[1]
                 return True
 
-class King():
-    def __init__(self, x, y, color, captured, type):
-        self.x = x
-        self.y = y
-        self.color = color
-        self.captured = captured
-        self.type = type
-
-    def move(position):
-        if abs(self.x - position[0]) <= 1 and abs(self.y - position[1]) <= 1:
-            if board.exists(position):
-                temp_piece = board.findPiece(position)
-                temp_piece.captured = True
-                temp_piece.x = -1
-
-            if board.isValid(position):
-                self.x = position[0]
-                self.y = position[1]
-                return True
-        return False
-
 def initializeBoard():
     pieces.append(Pawn(0,0,'white', False, '♟'))
-    pieces.append(Pawn(1,1,'white', False, '♟'))
+    pieces.append(Pawn(1,1,'black', False, '♙'))
     pieces.append(Pawn(7,7,'black', False, '♙'))
+    pieces.append(Bishop(3,3, 'white', False, '♝'))
 
 
 def drawBoard():
+    print('  _ _ _ _ _ _ _ _')
     ys = list(range(board.height))
     ys.sort(reverse=True)
     for y in ys:
         line = ''
+        line += str(y+1) + '|'
         for x in range(board.width):
             found = False
             for piece in pieces:
                 if [piece.x, piece.y] == [x,y]:
-                    line+=piece.type + ' '
+                    line+=piece.type + '|'
                     found = True
             if not found:
                 if board.isBlack([x,y]):
-                    line+='# '
+                    line+='#|'
                 else:
-                    line+='_ '
+                    line+='_|'
         print(line)
+    print('  A B C D E F G H')
 
 def actionBoard():
     invalid = True
