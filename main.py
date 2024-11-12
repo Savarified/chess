@@ -1,6 +1,6 @@
 import os
 pieces = []
-
+moves = 0
 class Board():
     def __init__(self, width, height):
         self.width = width
@@ -92,13 +92,9 @@ class Rook():
         if self.x != position[0] and self.y != position[1]:
             return False
         if board.exists(position):
-            if board.findPiece(position).color == self.color:
-                print(f'^Invalid position: [{chr(position[0]+ord('A')-1)}, {position[1]}] is occupied by a piece of your color')
-                return False
-            else:
-                temp_piece = board.findPiece(position)
-                temp_piece.captured = True
-                temp_piece.x = -1
+            temp_piece = board.findPiece(position)
+            temp_piece.captured = True
+            temp_piece.x = -1
 
         self.x = position[0]
         self.y = position[1]
@@ -166,9 +162,9 @@ class Pawn():
                 temp_piece.captured = True
                 temp_piece.x = -1
 
-            self.x = position[0]
-            self.y = position[1]
-            return True
+                self.x = position[0]
+                self.y = position[1]
+                return True
 
         if board.isValid(position) and position[1] == front and position[0] == self.x:
             if not board.exists(position):
@@ -207,7 +203,7 @@ def initializeBoard():
     pieces.append(Rook(7, 0, 'white', False, '♜'))
 
     for x in range(8):
-        pieces.append(Pawn(x, 1, 'white', False, '♙'))
+        pieces.append(Pawn(x, 1, 'white', False, '♟'))
 
 def drawBoard():
     print('  _ _ _ _ _ _ _ _')
@@ -254,8 +250,8 @@ def actionBoard():
             continue
 
         if board.exists(nextPos):
-            if board.findPiece(nextPos).color == board.findPiece(currentPos):
-                print(f'^Invalid position: [{chr(currentPos[0]+ord('A')-1)}, {currentPos[1]}] is occupied by a piece of your color')
+            if board.findPiece(nextPos).color == board.findPiece(currentPos).color:
+                print(f'^Invalid position: [{chr(nextPos[0]+ord('A'))}, {nextPos[1]+1}] is occupied by a piece of your color')
                 invalid = True
                 continue
 
@@ -269,19 +265,25 @@ def checkWin():
     for piece in pieces:
         if piece.type == '♚':
             if piece.captured == True:
-                return 'Black won!'
+                return 'White won in ' + str(moves) + ' moves!'
         if piece.type == '♔':
             if piece.captured == True:
-                return 'White won!'
+                return 'White won in ' + str(moves) + ' moves!'
     return False
 
 initializeBoard()
 run = True
 while run:
+    moves += 1
     os.system('clear')
     drawBoard()
     if not actionBoard():
         run = False
     if checkWin() != False:
+        os.system('clear')
         print(checkWin())
+        drawBoard()
+        run = False
+
+
 
